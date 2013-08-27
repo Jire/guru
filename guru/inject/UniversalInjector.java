@@ -84,13 +84,13 @@ final class UniversalInjector implements Injector {
 		// Very ugly fix... but I did research and this happened to be the
 		// [only] recommended way.
 		primitiveToBoxed.put(byte.class, Byte.class);
-		primitiveToBoxed.put(short.class, Integer.class);
+		primitiveToBoxed.put(short.class, Short.class);
 		primitiveToBoxed.put(int.class, Integer.class);
-		primitiveToBoxed.put(long.class, Integer.class);
-		primitiveToBoxed.put(float.class, Integer.class);
-		primitiveToBoxed.put(double.class, Integer.class);
-		primitiveToBoxed.put(char.class, Integer.class);
-		primitiveToBoxed.put(boolean.class, Integer.class);
+		primitiveToBoxed.put(long.class, Long.class);
+		primitiveToBoxed.put(float.class, Float.class);
+		primitiveToBoxed.put(double.class, Double.class);
+		primitiveToBoxed.put(char.class, Character.class);
+		primitiveToBoxed.put(boolean.class, Boolean.class);
 	}
 
 }

@@ -33,4 +33,8 @@ public abstract class AbstractModule implements Module {
 		return new LinkedBindingBuilder<T>(getBinder(), type);
 	}
 
+	protected final ConstantBindingBuilder<?> bind(Object value) {
+		return new ConstantBindingBuilder<Object>(getBinder(), value);
+	}
+
 }

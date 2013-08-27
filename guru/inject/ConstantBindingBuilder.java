@@ -7,19 +7,15 @@ import java.lang.annotation.Annotation;
 @Experimental
 public class ConstantBindingBuilder<T> extends TypedBindingBuilder<T> {
 
-	private final Class<? extends Annotation> annotation;
+	private final T value;
 
-	protected ConstantBindingBuilder(Binder binder, Class<T> type,
-			Class<? extends Annotation> annotation) {
-		super(binder, type);
-		this.annotation = annotation;
+	@SuppressWarnings("unchecked")
+	protected ConstantBindingBuilder(Binder binder, T value) {
+		super(binder, (Class<T>) value.getClass());
+		this.value = value;
 	}
 
-	public final Class<? extends Annotation> getAnnotation() {
-		return annotation;
-	}
-
-	public void to(T value) {
+	public final void with(Class<? extends Annotation> annotation) {
 		getBinder().bind(new ConstantBinding<T>(getType(), annotation, value));
 	}
 

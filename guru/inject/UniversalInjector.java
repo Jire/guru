@@ -4,6 +4,8 @@ import guru.Experimental;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
+import java.util.HashMap;
+import java.util.Map;
 
 @Experimental
 final class UniversalInjector implements Injector {
@@ -48,7 +50,9 @@ final class UniversalInjector implements Injector {
 												type)) {
 									ConstantBinding constantBinding = ((ConstantBinding) obinding);
 									if (constantBinding.getAnnotation() == annotationType
-											&& constantBinding.getType() == parameterType) {
+											&& areComparable(
+													constantBinding.getType(),
+													parameterType)) {
 										parameters[i] = constantBinding
 												.getValue();
 										continue parameters;
@@ -67,6 +71,26 @@ final class UniversalInjector implements Injector {
 		}
 
 		return null;
+	}
+
+	private static boolean areComparable(Class<?> a, Class<?> b) {
+		return a == b || primitiveToBoxed.get(a) == b
+				|| a == primitiveToBoxed.get(b);
+	}
+
+	private static final Map<Class<?>, Class<?>> primitiveToBoxed = new HashMap<Class<?>, Class<?>>();
+
+	static {
+		// Very ugly fix... but I did research and this happened to be the
+		// [only] recommended way.
+		primitiveToBoxed.put(byte.class, Byte.class);
+		primitiveToBoxed.put(short.class, Integer.class);
+		primitiveToBoxed.put(int.class, Integer.class);
+		primitiveToBoxed.put(long.class, Integer.class);
+		primitiveToBoxed.put(float.class, Integer.class);
+		primitiveToBoxed.put(double.class, Integer.class);
+		primitiveToBoxed.put(char.class, Integer.class);
+		primitiveToBoxed.put(boolean.class, Integer.class);
 	}
 
 }

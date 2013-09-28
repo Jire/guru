@@ -24,6 +24,13 @@ final class UniversalInjector implements Injector {
 	@Override
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public <T> T create(Class<T> type) {
+		for (Object binding : getBinder().find(
+				(Class<? extends Binding<T>>) ScopedBinding.class, type)) {
+			T result = ((ScopedBinding) binding).getScope().resolve(type);
+			if (result != null)
+				return result;
+		}
+		T instance = null;
 		for (Object binding : getBinder()
 				.find((Class<? extends Binding<T>>) ImplementationBinding.class,
 						type)) {
@@ -32,9 +39,10 @@ final class UniversalInjector implements Injector {
 			try {
 				for (Constructor<?> constructor : implementation
 						.getDeclaredConstructors()) {
-					if (!constructor.isAnnotationPresent(Inject.class))
-						continue;
 					Class<?>[] parameterTypes = constructor.getParameterTypes();
+					if (parameterTypes.length > 0
+							&& !constructor.isAnnotationPresent(Inject.class))
+						continue;
 					Object[] parameters = new Object[parameterTypes.length];
 					parameters: for (int i = 0; i < parameterTypes.length; i++) {
 						Class<?> parameterType = parameterTypes[i];
@@ -62,15 +70,25 @@ final class UniversalInjector implements Injector {
 						}
 					}
 					constructor.setAccessible(true);
-					return (T) constructor.newInstance(parameters);
+					instance = (T) constructor.newInstance(parameters);
+					break;
 				}
-				return (T) (implementation.newInstance());
+				if (instance == null)
+					instance = (T) (implementation.newInstance());
 			} catch (Exception e) {
 				throw new InjectionFailedException(e);
 			}
 		}
 
-		return null;
+		if (instance != null) {
+			for (Object scopedBinding : getBinder().find(
+					(Class<? extends Binding<T>>) ScopedBinding.class, type)) {
+				((ScopedBinding) scopedBinding).getScope()
+						.apply(type, instance);
+			}
+		}
+
+		return instance;
 	}
 
 	private static boolean areComparable(Class<?> a, Class<?> b) {

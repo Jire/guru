@@ -40,9 +40,11 @@ final class UniversalBinder implements Binder {
 	public <B, T> List<B> find(Class<? extends Binding<T>> binding,
 			Class<? extends T> type) {
 		List<Binding<T>> list = new ArrayList<Binding<T>>();
-		for (Binding<?> bind : bindings.get(binding))
-			list.add((Binding<T>) bind);
-		return (List<B>) bindings.get(binding);
+		List<Binding<?>> existing = bindings.get(binding);
+		if (existing != null)
+			for (Binding<?> bind : existing)
+				list.add((Binding<T>) bind);
+		return (List<B>) list;
 	}
 
 }

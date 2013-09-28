@@ -9,9 +9,10 @@ public final class LinkedBindingBuilder<T> extends TypedBindingBuilder<T> {
 		super(binder, type);
 	}
 
-	public void to(Class<? extends T> implementation) {
+	public ScopedBindingBuilder<T> to(Class<? extends T> implementation) {
 		getBinder().bind(
 				new ImplementationBinding<T>(getType(), implementation));
+		return new ScopedBindingBuilder<T>(getBinder(), getType());
 	}
 
 }
